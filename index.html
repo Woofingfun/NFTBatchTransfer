@@ -4,50 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WoofingJace NFT Batch Transfer</title>
-    <link rel="icon" href="https://woofingjace.com/images/jace.png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="https://woofingjace.com/images/jace.png" type="image/x-icon">
+    <link rel="icon" href="https://woofingjace.com/images/jace.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-family: 'Orbitron', sans-serif;
-            background: linear-gradient(135deg, #0d1117, #161b22);
-            margin: 0;
-            padding: 20px;
             min-height: 100vh;
-            color: #c9d1d9;
+            margin: 0;
+            font-family: 'VT323', monospace;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #00ffcc;
+            text-align: center;
+            overflow-x: hidden;
         }
         .header {
-            text-align: center;
             margin-bottom: 20px;
         }
         h1 {
-            font-size: 48px;
-            color: #58a6ff;
-            text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+            font-size: 2.5em;
+            text-shadow: 0 0 10px #00ffcc, 0 0 20px #ff007f;
+            margin: 20px;
         }
         .wallet-info {
             margin: 10px 0;
-            font-size: 16px;
+            font-size: 1.2em;
+            text-shadow: 0 0 5px #00ffcc;
         }
         .action-btn {
             padding: 10px 20px;
-            font-size: 16px;
-            background: linear-gradient(45deg, #58a6ff, #1f6feb);
-            color: #0d1117;
-            border: none;
-            border-radius: 8px;
+            margin: 5px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            background: #ff007f;
+            color: #00ffcc;
+            border: none;
+            border-radius: 5px;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ff007f;
+            transition: all 0.3s ease;
         }
         .action-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(88, 166, 255, 0.7);
+            background: #00ffcc;
+            color: #ff007f;
+            box-shadow: 0 0 15px #00ffcc;
         }
         .action-btn:disabled {
             background: #444;
             cursor: not-allowed;
+            box-shadow: none;
         }
         .action-btn.loading {
             opacity: 0.7;
@@ -65,26 +72,35 @@
             align-items: center;
         }
         .modal-content {
-            background: #161b22;
+            background: rgba(0, 0, 0, 0.7);
             padding: 20px;
-            border-radius: 12px;
+            border: 2px solid #00ffcc;
+            border-radius: 10px;
             text-align: center;
-            color: #c9d1d9;
+            color: #00ffcc;
             max-width: 350px;
-            border: 2px solid #58a6ff;
-            box-shadow: 0 0 20px rgba(88, 166, 255, 0.5);
+            box-shadow: 0 0 20px #ff007f;
         }
         .modal-content p {
             margin-bottom: 15px;
-            font-size: 18px;
+            font-size: 1.2em;
+            text-shadow: 0 0 5px #00ffcc;
         }
         .modal-content button {
             padding: 10px 20px;
-            background: #58a6ff;
-            color: #0d1117;
+            background: #ff007f;
+            color: #00ffcc;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ff007f;
+        }
+        .modal-content button:hover {
+            background: #00ffcc;
+            color: #ff007f;
+            box-shadow: 0 0 15px #00ffcc;
         }
         .nft-viewer {
             margin-top: 30px;
@@ -92,9 +108,8 @@
             max-width: 800px;
         }
         .nft-viewer h2 {
-            font-size: 32px;
-            color: #58a6ff;
-            text-align: center;
+            font-size: 2em;
+            text-shadow: 0 0 10px #00ffcc;
         }
         #nftList {
             display: grid;
@@ -103,11 +118,11 @@
             justify-content: center;
         }
         .nft-card {
-            text-align: center;
-            background: #21262d;
+            background: rgba(0, 0, 0, 0.7);
             padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(88, 166, 255, 0.2);
+            border: 2px solid #ff007f;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ff007f;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -119,22 +134,24 @@
             border-radius: 5px;
         }
         .nft-card p {
-            font-size: 14px;
+            font-size: 1em;
             margin: 5px 0;
+            text-shadow: 0 0 5px #00ffcc;
         }
         .nft-card input {
             width: 100%;
             padding: 5px;
             margin-bottom: 5px;
+            border: 1px solid #00ffcc;
             border-radius: 5px;
-            border: 1px solid #58a6ff;
-            background: #0d1117;
-            color: #c9d1d9;
-            font-size: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00ffcc;
+            font-family: 'VT323', monospace;
+            font-size: 1em;
         }
         .nft-card .action-btn {
             padding: 6px 12px;
-            font-size: 12px;
+            font-size: 1em;
             width: 100%;
         }
         .batch-transfer {
@@ -147,45 +164,47 @@
             max-width: 400px;
         }
         .batch-transfer label {
-            font-size: 14px;
-            color: #58a6ff;
-            font-weight: bold;
+            font-size: 1.2em;
+            color: #00ffcc;
+            text-shadow: 0 0 5px #00ffcc;
         }
         .batch-transfer textarea {
             width: 100%;
             height: 150px;
             padding: 8px;
+            border: 1px solid #00ffcc;
             border-radius: 5px;
-            border: 1px solid #58a6ff;
-            background: #0d1117;
-            color: #c9d1d9;
-            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00ffcc;
+            font-family: 'VT323', monospace;
+            font-size: 1em;
             resize: vertical;
         }
         .batch-transfer input {
             width: 100%;
             padding: 8px;
+            border: 1px solid #00ffcc;
             border-radius: 5px;
-            border: 1px solid #58a6ff;
-            background: #0d1117;
-            color: #c9d1d9;
-            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00ffcc;
+            font-family: 'VT323', monospace;
+            font-size: 1em;
         }
         @media (max-width: 768px) {
-            h1 { font-size: 32px; }
-            .wallet-info { font-size: 14px; }
-            .action-btn { padding: 8px 16px; font-size: 14px; }
+            h1 { font-size: 2em; }
+            .wallet-info { font-size: 1em; }
+            .action-btn { padding: 8px 16px; font-size: 1em; }
             .modal-content { max-width: 90%; padding: 15px; }
-            .nft-viewer h2 { font-size: 24px; }
+            .nft-viewer h2 { font-size: 1.5em; }
             #nftList { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .nft-card { padding: 8px; }
             .nft-card img { max-width: 120px; }
-            .nft-card p { font-size: 12px; }
-            .nft-card input { padding: 4px; font-size: 10px; }
-            .nft-card .action-btn { padding: 5px 10px; font-size: 10px; }
-            .batch-transfer textarea { padding: 6px; font-size: 12px; }
-            .batch-transfer label { font-size: 12px; }
-            .batch-transfer input { padding: 6px; font-size: 12px; }
+            .nft-card p { font-size: 0.9em; }
+            .nft-card input { padding: 4px; font-size: 0.9em; }
+            .nft-card .action-btn { padding: 5px 10px; font-size: 0.9em; }
+            .batch-transfer textarea { padding: 6px; font-size: 0.9em; }
+            .batch-transfer label { font-size: 1em; }
+            .batch-transfer input { padding: 6px; font-size: 0.9em; }
         }
     </style>
 </head>
@@ -199,7 +218,7 @@
     </div>
     <div class="batch-transfer">
         <label for="contractAddress">NFT Contract Address:</label>
-        <input type="text" id="contractAddress" value="0x509Fe4F669eF1E1480c2d41F52E87dBd4764db5f" readonly>
+        <input type="text" id="contractAddress" placeholder="Enter NFT contract address">
         <button id="approveBtn" class="action-btn" onclick="approveContract()" disabled>Approve Contract</button>
         <label for="batchInput">Batch Transfer (Format: address,amount per line, max total 100):</label>
         <textarea id="batchInput" placeholder="e.g.
@@ -221,7 +240,7 @@
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
         let web3, accounts, nftContract, multiCallContract;
-        const MULTICALL_CONTRACT_ADDRESS = "0xC0e5f06aD47986B0F0755F85eE5D949241F8E76A";
+        const MULTICALL_CONTRACT_ADDRESS = "0x509Fe4F669eF1E1480c2d41F52E87dBd4764db5f";
         const BSC_CHAIN_ID = '0x38';
 
         const ERC721_ABI = [
