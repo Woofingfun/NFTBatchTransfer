@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WoofingJace NFT Batch Transfer</title>
+    <link rel="icon" href="https://woofingjace.com/images/jace.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #0d1117, #161b22);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: #c9d1d9;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 48px;
+            color: #58a6ff;
+            text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+        }
+        .wallet-info {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .action-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: linear-gradient(45deg, #58a6ff, #1f6feb);
+            color: #0d1117;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(88, 166, 255, 0.7);
+        }
+        .action-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+        .action-btn.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #161b22;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: #c9d1d9;
+            max-width: 350px;
+            border: 2px solid #58a6ff;
+            box-shadow: 0 0 20px rgba(88, 166, 255, 0.5);
+        }
+        .modal-content p {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            background: #58a6ff;
+            color: #0d1117;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .nft-viewer {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 800px;
+        }
+        .nft-viewer h2 {
+            font-size: 32px;
+            color: #58a6ff;
+            text-align: center;
+        }
+        #nftList {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            justify-content: center;
+        }
+        .nft-card {
+            text-align: center;
+            background: #21262d;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(88, 166, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .nft-card img {
+            width: 100%;
+            max-width: 150px;
+            height: auto;
+            border-radius: 5px;
+        }
+        .nft-card p {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .nft-card input {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            border: 1px solid #58a6ff;
+            background: #0d1117;
+            color: #c9d1d9;
+            font-size: 12px;
+        }
+        .nft-card .action-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            width: 100%;
+        }
+        .batch-transfer {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .batch-transfer label {
+            font-size: 14px;
+            color: #58a6ff;
+            font-weight: bold;
+        }
+        .batch-transfer textarea {
+            width: 100%;
+            height: 150px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #58a6ff;
+            background: #0d1117;
+            color: #c9d1d9;
+            font-size: 14px;
+            resize: vertical;
+        }
+        .batch-transfer input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #58a6ff;
+            background: #0d1117;
+            color: #c9d1d9;
+            font-size: 14px;
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 32px; }
+            .wallet-info { font-size: 14px; }
+            .action-btn { padding: 8px 16px; font-size: 14px; }
+            .modal-content { max-width: 90%; padding: 15px; }
+            .nft-viewer h2 { font-size: 24px; }
+            #nftList { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .nft-card { padding: 8px; }
+            .nft-card img { max-width: 120px; }
+            .nft-card p { font-size: 12px; }
+            .nft-card input { padding: 4px; font-size: 10px; }
+            .nft-card .action-btn { padding: 5px 10px; font-size: 10px; }
+            .batch-transfer textarea { padding: 6px; font-size: 12px; }
+            .batch-transfer label { font-size: 12px; }
+            .batch-transfer input { padding: 6px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>WoofingJace NFT Batch Transfer</h1>
+        <div class="wallet-info">
+            Wallet: <span id="walletAddress">Not connected</span>
+        </div>
+        <button id="connectWalletBtn" class="action-btn">Connect Wallet</button>
+    </div>
+    <div class="batch-transfer">
+        <label for="contractAddress">NFT Contract Address:</label>
+        <input type="text" id="contractAddress" value="0x509Fe4F669eF1E1480c2d41F52E87dBd4764db5f" readonly>
+        <button id="approveBtn" class="action-btn" onclick="approveContract()" disabled>Approve Contract</button>
+        <label for="batchInput">Batch Transfer (Format: address,amount per line, max total 100):</label>
+        <textarea id="batchInput" placeholder="e.g.
+0x394E7b6F051f0c34417d87831E156EBbbbdDA490,8
+0x6d128f9717280eED5553d714972B16fdfDcC5c90,6"></textarea>
+        <button id="batchTransferBtn" class="action-btn" onclick="batchTransferNFTs()" disabled>Batch Transfer</button>
+    </div>
+    <div class="nft-viewer">
+        <h2>Your NFTs</h2>
+        <div id="nftList"></div>
+    </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
+    <script>
+        let web3, accounts, nftContract, multiCallContract;
+        const MULTICALL_CONTRACT_ADDRESS = "0xC0e5f06aD47986B0F0755F85eE5D949241F8E76A";
+        const BSC_CHAIN_ID = '0x38';
+
+        const ERC721_ABI = [
+            {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"_approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"_data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"walletOfOwner","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"}
+        ];
+
+        const MULTICALL_CONTRACT_ABI = [
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":false,"internalType":"address[]","name":"to","type":"address[]"},{"indexed":false,"internalType":"uint256[]","name":"tokenIds","type":"uint256[]"}],"name":"BatchTransfer","type":"event"},
+            {"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"address[]","name":"to","type":"address[]"},{"internalType":"uint256[]","name":"tokenIds","type":"uint256[]"}],"name":"batchTransfer","outputs":[],"stateMutability":"nonpayable","type":"function"}
+        ];
+
+        function showModal(message) {
+            document.getElementById('modalMessage').innerHTML = message;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        async function connectWallet() {
+            const connectButton = document.getElementById('connectWalletBtn');
+            connectButton.classList.add('loading');
+            if (!window.ethereum) {
+                showModal('No wallet detected. Please install <a href="https://metamask.io" target="_blank">MetaMask</a>.');
+                connectButton.classList.remove('loading');
+                return;
+            }
+            try {
+                web3 = new Web3(window.ethereum);
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                if (chainId !== BSC_CHAIN_ID) {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: BSC_CHAIN_ID }],
+                    });
+                }
+                accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                multiCallContract = new web3.eth.Contract(MULTICALL_CONTRACT_ABI, MULTICALL_CONTRACT_ADDRESS);
+                showModal('Wallet connected successfully! Connected to BNB Chain.');
+                updateWalletAddress();
+                document.getElementById('approveBtn').disabled = false;
+            } catch (error) {
+                showModal(`Connection failed: ${error.message || 'Unknown error'}`);
+            } finally {
+                connectButton.classList.remove('loading');
+            }
+        }
+
+        async function updateWalletAddress() {
+            if (!accounts || accounts.length === 0) {
+                document.getElementById('walletAddress').innerText = 'Not connected';
+            } else {
+                const shortAddress = `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
+                document.getElementById('walletAddress').innerText = shortAddress;
+            }
+        }
+
+        async function approveContract() {
+            const contractAddress = document.getElementById('contractAddress').value.trim();
+            if (!web3.utils.isAddress(contractAddress)) {
+                showModal('Invalid contract address!');
+                return;
+            }
+            const approveButton = document.getElementById('approveBtn');
+            approveButton.classList.add('loading');
+            approveButton.disabled = true;
+            try {
+                nftContract = new web3.eth.Contract(ERC721_ABI, contractAddress);
+                const isApproved = await nftContract.methods.isApprovedForAll(accounts[0], MULTICALL_CONTRACT_ADDRESS).call();
+                if (isApproved) {
+                    showModal('Contract already approved!');
+                    document.getElementById('batchTransferBtn').disabled = false;
+                    fetchOwnedNFTs();
+                } else {
+                    await nftContract.methods.setApprovalForAll(MULTICALL_CONTRACT_ADDRESS, true).send({ from: accounts[0] });
+                    showModal('Contract approved successfully!');
+                    document.getElementById('batchTransferBtn').disabled = false;
+                    fetchOwnedNFTs();
+                }
+            } catch (error) {
+                showModal(`Approval failed: ${error.message || 'Unknown error'}`);
+            } finally {
+                approveButton.classList.remove('loading');
+                approveButton.disabled = false;
+            }
+        }
+
+        async function fetchOwnedNFTs() {
+            if (!web3 || !nftContract || !accounts) {
+                showModal('Please connect your wallet and approve the contract!');
+                return;
+            }
+            const nftList = document.getElementById('nftList');
+            nftList.innerHTML = '<p>Loading your NFTs...</p>';
+            try {
+                const tokenIds = await nftContract.methods.walletOfOwner(accounts[0]).call();
+                if (tokenIds.length === 0) {
+                    nftList.innerHTML = '<p>You don’t own any NFTs for this contract.</p>';
+                    return;
+                }
+                nftList.innerHTML = '';
+                for (const tokenId of tokenIds) {
+                    const tokenURI = await nftContract.methods.tokenURI(tokenId).call();
+                    await displayNFT(tokenId, tokenURI);
+                }
+            } catch (error) {
+                showModal(`Failed to fetch NFTs: ${error.message || 'Unknown error'}`);
+                nftList.innerHTML = '<p>Error loading NFTs.</p>';
+            }
+        }
+
+        async function displayNFT(tokenId, tokenURI) {
+            const nftList = document.getElementById('nftList');
+            let metadata;
+            try {
+                if (tokenURI.startsWith('data:application/json;base64,')) {
+                    const base64Data = tokenURI.split(',')[1];
+                    metadata = JSON.parse(atob(base64Data));
+                } else {
+                    const response = await fetch(tokenURI);
+                    metadata = await response.json();
+                }
+            } catch {
+                metadata = { name: `Token #${tokenId}`, image: '' };
+            }
+            const nftDiv = document.createElement('div');
+            nftDiv.className = 'nft-card';
+            nftDiv.innerHTML = `
+                <img src="${metadata.image || 'https://via.placeholder.com/150'}" alt="${metadata.name}">
+                <p>${metadata.name} (ID: ${tokenId})</p>
+                <input type="text" id="transferAddress${tokenId}" placeholder="Recipient Address">
+                <button class="action-btn" onclick="transferNFT(${tokenId})">Transfer</button>
+            `;
+            nftList.appendChild(nftDiv);
+        }
+
+        async function transferNFT(tokenId) {
+            if (!web3 || !nftContract || !accounts) {
+                showModal('Please connect your wallet and approve the contract!');
+                return;
+            }
+            const transferAddress = document.getElementById(`transferAddress${tokenId}`).value;
+            if (!web3.utils.isAddress(transferAddress)) {
+                showModal('Invalid recipient address!');
+                return;
+            }
+            try {
+                showModal('Transferring NFT...');
+                await nftContract.methods.safeTransferFrom(accounts[0], transferAddress, tokenId).send({ from: accounts[0] });
+                showModal('NFT transferred successfully!');
+                fetchOwnedNFTs();
+            } catch (error) {
+                showModal(`Transfer failed: ${error.message || 'Unknown error'}`);
+            }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        async function batchTransferNFTs() {
+            if (!web3 || !nftContract || !multiCallContract || !accounts) {
+                showModal('Please connect your wallet and approve the contract!');
+                return;
+            }
+            const contractAddress = document.getElementById('contractAddress').value.trim();
+            if (!web3.utils.isAddress(contractAddress)) {
+                showModal('Invalid contract address!');
+                return;
+            }
+            const batchInput = document.getElementById('batchInput').value.trim();
+            const batchButton = document.getElementById('batchTransferBtn');
+            batchButton.classList.add('loading');
+            batchButton.disabled = true;
+            try {
+                const lines = batchInput.split('\n').filter(line => line.trim() !== '');
+                if (lines.length === 0) {
+                    showModal('Please provide at least one address and amount.');
+                    throw new Error('Empty input');
+                }
+                const transfers = [];
+                let totalAmount = 0;
+                for (const line of lines) {
+                    const [address, amountStr] = line.split(',').map(item => item.trim());
+                    if (!web3.utils.isAddress(address)) {
+                        showModal(`Invalid address: ${address}`);
+                        throw new Error('Invalid address');
+                    }
+                    const amount = parseInt(amountStr);
+                    if (isNaN(amount) || amount < 1) {
+                        showModal(`Invalid amount for address ${address}: ${amountStr}`);
+                        throw new Error('Invalid amount');
+                    }
+                    transfers.push({ address, amount });
+                    totalAmount += amount;
+                }
+                if (totalAmount > 100) {
+                    showModal('Total transfer amount exceeds 100 NFTs.');
+                    throw new Error('Amount limit exceeded');
+                }
+                const tokenIds = await nftContract.methods.walletOfOwner(accounts[0]).call();
+                if (tokenIds.length < totalAmount) {
+                    showModal(`You only own ${tokenIds.length} NFTs, but requested to transfer ${totalAmount}.`);
+                    throw new Error('Insufficient NFTs');
+                }
+                const shuffledTokenIds = shuffleArray([...tokenIds]);
+                const toAddresses = [];
+                const selectedTokenIds = [];
+                let tokenIndex = 0;
+                for (const { address, amount } of transfers) {
+                    for (let i = 0; i < amount; i++) {
+                        toAddresses.push(address);
+                        selectedTokenIds.push(shuffledTokenIds[tokenIndex++]);
+                    }
+                }
+                showModal(`Preparing to transfer ${totalAmount} NFTs...`);
+                await multiCallContract.methods.batchTransfer(
+                    contractAddress,
+                    toAddresses,
+                    selectedTokenIds
+                ).send({ from: accounts[0] });
+                showModal('Batch transfer completed successfully!');
+                fetchOwnedNFTs();
+            } catch (error) {
+                if (!error.message.includes('Empty input') && !error.message.includes('Invalid address') && 
+                    !error.message.includes('Invalid amount') && !error.message.includes('Amount limit exceeded') && 
+                    !error.message.includes('Insufficient NFTs')) {
+                    showModal(`Batch transfer failed: ${error.message || 'Unknown error'}`);
+                }
+            } finally {
+                batchButton.classList.remove('loading');
+                batchButton.disabled = false;
+            }
+        }
+
+        window.onload = () => {
+            if (!window.ethereum) {
+                showModal('No wallet detected. Please install <a href="https://metamask.io" target="_blank">MetaMask</a>.');
+            }
+        };
+
+        window.ethereum?.on('chainChanged', () => {
+            window.location.reload();
+        });
+
+        window.ethereum?.on('accountsChanged', (newAccounts) => {
+            accounts = newAccounts;
+            updateWalletAddress();
+            if (newAccounts.length === 0) {
+                document.getElementById('approveBtn').disabled = true;
+                document.getElementById('batchTransferBtn').disabled = true;
+            } else {
+                connectWallet();
+            }
+        });
+
+        document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
+    </script>
+</body>
+</html>
